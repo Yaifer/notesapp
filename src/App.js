@@ -1,3 +1,4 @@
+//IMPORTS=====================================================================================
 import logo from './logo.svg';
 import './App.css';
 
@@ -7,17 +8,18 @@ import { List, Input, Button } from 'antd';
 import 'antd/dist/antd.css';
 import { listNotes } from './graphql/queries';
 import { v4 as uuid } from 'uuid';
-import { createNote as CreateNote } from './graphql/mutations'
+import { createNote as CreateNote, deleteNote as DeleteNote } from './graphql/mutations'
 
 const CLIENT_ID = uuid();
 
+//INITIAL STATE=============================================================================
 const initialState = {
   notes: [],
   loading: true,
   error: false,
   form: { name: '', description: '' }
 };
-
+//REDUCER===================================================================================
 const reducer = (state, action) => {
   switch(action.type) {
     case 'SET_NOTES':
@@ -36,7 +38,7 @@ const reducer = (state, action) => {
       return {...state};
   }
 };
-
+//APP CONSTANT===========================================================================
 const App = () => {
 
   const [state, dispatch] = useReducer(reducer, initialState);
@@ -54,10 +56,12 @@ const App = () => {
     }
   };
 
+//USE EFFECT==========================================================================
   useEffect(() => {
     fetchNotes()
   }, []);
 
+// CREATE NOTE===========================================================================
   const createNote = async () => {
     //Deconstructing
     const { form } = state;
@@ -81,13 +85,37 @@ const App = () => {
     }
   };
 
+//DELETE NOTE===========================================================================
+  const deleteNote = async (noteToDelete) => {
+    // Optmisticly update state and screen. 
+    dispatch ({type: "SET_NOTES", notes: state.notes.filter(x => x !== noteToDelete)});
+
+    //then do the delete via Graphql mutation.
+    try {
+      await API.graphql({
+        query: DeleteNote,
+        variables: {input: {id: noteToDelete.id }}
+      });
+    }
+    catch (err) {
+      console.error(err);
+    }
+  }
+  
+//ON CHANGE============================================================================
   const onChange = (e) => {
     dispatch({ type: 'SET_INPUT', name: e.target.name, value: e.target.value });
   };
 
+// RENDER ITEM===========================================================================
   const renderItem = (item) => {
     return (
-      <List.Item style={styles.item}>
+      <List.Item 
+        style={styles.item}
+        actions={[
+          <p style={styles.p} onClick={() => deleteNote(item)}>
+            Delete
+          </p>]}>
         <List.Item.Meta
           title={item.name}
           description={item.description}
@@ -95,7 +123,7 @@ const App = () => {
       </List.Item>
     );
   }; 
-
+//RETURNS================================================================================
   return (
     <div style={styles.container}>
 
@@ -127,6 +155,7 @@ const App = () => {
   );
 }
 
+//JS STYLES===============================================================================
 const styles = {
   container: {padding: 20},
   input: {marginBottom: 10},
