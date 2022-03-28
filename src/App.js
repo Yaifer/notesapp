@@ -1,14 +1,14 @@
 //IMPORTS=====================================================================================
-import logo from './logo.svg';
+//import logo from './logo.svg';
 import './App.css';
 
 import React, {useEffect, useReducer} from 'react';
 import { API } from 'aws-amplify';
 import { List, Input, Button } from 'antd';
-import 'antd/dist/antd.css';
+import 'antd/dist/antd.min.css';
 import { listNotes } from './graphql/queries';
 import { v4 as uuid } from 'uuid';
-import { createNote as CreateNote, deleteNote as DeleteNote } from './graphql/mutations'
+import { createNote as CreateNote, deleteNote as DeleteNote, updateNote as UpdateNote } from './graphql/mutations'
 
 const CLIENT_ID = uuid();
 
@@ -101,7 +101,25 @@ const App = () => {
       console.error(err);
     }
   }
-  
+
+//UPDATE NOTE===========================================================================
+const updateNote = async (noteToUpdate) => {
+  // Optmisticly update state and screen. 
+  dispatch ({type: "SET_NOTES", notes: state.notes.map(x => ({...x, completed: x ===  noteToUpdate ? !x.completed: x.completed})
+  )});
+
+  //then do the update via Graphql mutation.
+  try {
+    await API.graphql({
+      query: UpdateNote,
+      variables: {input: {id: noteToUpdate.id, completed: !noteToUpdate.completed }}
+    });
+  }
+  catch (err) {
+    console.error(err);
+  }
+}
+
 //ON CHANGE============================================================================
   const onChange = (e) => {
     dispatch({ type: 'SET_INPUT', name: e.target.name, value: e.target.value });
@@ -115,9 +133,12 @@ const App = () => {
         actions={[
           <p style={styles.p} onClick={() => deleteNote(item)}>
             Delete
-          </p>]}>
+          </p>]}>,
+          <p style={styles.p} onClick={() => updateNote(item)}>
+            {item.completed ? 'Mark incomplete' : 'Mark complete'}
+          </p>
         <List.Item.Meta
-          title={item.name}
+          title={` ${item.name} ${item.completed ? ' (completed)' : ''}`}
           description={item.description}
         />
       </List.Item>
@@ -160,7 +181,7 @@ const styles = {
   container: {padding: 20},
   input: {marginBottom: 10},
   item: { textAlign: 'left' },
-  p: { color: '#1890ff' }
+  p: { color: '#1890ff'}
 }
 
 export default App;
