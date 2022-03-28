@@ -4,7 +4,7 @@ import './App.css';
 
 import React, {useEffect, useReducer} from 'react';
 import { API } from 'aws-amplify';
-import { List, Input, Button } from 'antd';
+import { List, Input, Button, PageHeader } from 'antd';
 import 'antd/dist/antd.min.css';
 import { listNotes } from './graphql/queries';
 import { v4 as uuid } from 'uuid';
@@ -134,7 +134,7 @@ const updateNote = async (noteToUpdate) => {
           <p style={styles.p} onClick={() => deleteNote(item)}>
             Delete
           </p>]}>,
-          <p style={styles.p} onClick={() => updateNote(item)}>
+          <p style={styles.p2} onClick={() => updateNote(item)}>
             {item.completed ? 'Mark incomplete' : 'Mark complete'}
           </p>
         <List.Item.Meta
@@ -147,7 +147,13 @@ const updateNote = async (noteToUpdate) => {
 //RETURNS================================================================================
   return (
     <div style={styles.container}>
-
+      <h1 style={{color: "blue", fontWeight: "bolder", fontSize:"32pt"}}>NOTES MCGOATS</h1>
+      <PageHeader
+        className="site-page-header"
+        title="Keep all your goat notes in a row!!!!!!!!!!!"
+        subTitle="a program from the desk of Jeffery Hannon"
+      />
+      <hr/>
       <Input
         onChange={onChange}
         value={state.form.name}
@@ -166,7 +172,7 @@ const updateNote = async (noteToUpdate) => {
         onClick={createNote}
         type="primary"
       >Create Note</Button>
-
+      <hr/>
       <List
         loading={state.loading}
         dataSource={state.notes}
@@ -178,10 +184,11 @@ const updateNote = async (noteToUpdate) => {
 
 //JS STYLES===============================================================================
 const styles = {
-  container: {padding: 20},
-  input: {marginBottom: 10},
+  container: {padding: 30, background:'lightgray', marginBottom: 20, borderRadius: 60 + 'px', border: '8px solid #1e8cfc', margin:'10px', fontSize: '20px'},
+  input: {marginBottom: 5},
   item: { textAlign: 'left' },
-  p: { color: '#1890ff'}
+  p: { color: 'red', background:'black', padding:'5px', borderRadius: 10 + 'px'},
+  p2: { color: '#fff', background:'#1e8cfc', padding:'5px', borderRadius: 3 + 'px',width:'10%',textAlign:"center"}
 }
 
 export default App;
