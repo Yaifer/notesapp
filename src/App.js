@@ -147,31 +147,31 @@ const updateNote = async (noteToUpdate) => {
 //RETURNS================================================================================
   return (
     <div style={styles.container}>
-      <h1 style={{color: "blue", fontWeight: "bolder", fontSize:"32pt"}}>NOTES MCGOATS</h1>
+      <h1 style={{color: "blue", fontWeight: "bolder", fontSize:"32pt",textAlign:"center"}}>NOTES MCGOATS</h1>
       <PageHeader
         className="site-page-header"
-        title="Keep all your goat notes in a row!!!!!!!!!!!"
+        title="Keep your Note-Goats in a Row!!!!!!!!!!!"
         subTitle="a program from the desk of Jeffery Hannon"
       />
       <hr/>
       <Input
         onChange={onChange}
         value={state.form.name}
-        placeholder="Enter note name"
+        placeholder="Enter a goat-note name"
         name='name'
         style={styles.input}
       />
       <Input
         onChange={onChange}
         value={state.form.description}
-        placeholder="Enter note description"
+        placeholder="Enter a goat-note description"
         name='description'
         style={styles.input}
       />
       <Button
         onClick={createNote}
         type="primary"
-      >Create Note</Button>
+      >Create a Goat-Note</Button>
       <hr/>
       <List
         loading={state.loading}
